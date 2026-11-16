@@ -308,8 +308,10 @@ object LiveUpdates {
      */
     @JvmStatic
     fun triggerLocalLiveUpdate(context: Context, payload: LiveUpdatePayload): Boolean {
+        val telemetryOp = com.adobe.marketing.mobile.telemetrybridge.TelemetryBridge.operationStarted("com.adobe.liveupdates", "liveUpdateTracking.start")
         val plugin = MobileCore.getPlugin(ILiveupdatePlugin::class.java)
         if (plugin !is LiveUpdatePlugin) {
+            com.adobe.marketing.mobile.telemetrybridge.TelemetryBridge.operationCompleted(telemetryOp, "com.adobe.liveupdates", "liveUpdateTracking.start", "rejected", "canonical plugin not registered")
             Log.warning(
                 LiveUpdatesConstants.LOG_TAG, SELF_TAG,
                 "triggerLocalLiveUpdate requires the canonical LiveUpdatePlugin to be " +
@@ -318,6 +320,7 @@ object LiveUpdates {
             return false
         }
         plugin.postLiveUpdate(context, payload)
+        com.adobe.marketing.mobile.telemetrybridge.TelemetryBridge.operationCompleted(telemetryOp, "com.adobe.liveupdates", "liveUpdateTracking.start", "success", "live update posted")
         return true
     }
 
